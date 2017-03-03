@@ -1,0 +1,30 @@
+Socket clients = null;
+        try {
+            // 
+            clients = new Socket("192.16.2.130", 8692);
+            // send msg to server
+            PrintStream out = new PrintStream(clients.getOutputStream());
+            logger.warn("connection is builded...");
+            String message = sendMsg;
+            logger.warn("message is :" +message);
+            out.write('\u000b');
+            out.write(message.getBytes("utf-8"));
+            out.write('\u001c');
+            out.write(13);
+            out.flush();
+            InputStreamReader streamReader = new InputStreamReader(clients.getInputStream(), "utf-8");
+            BufferedReader reader = new BufferedReader(streamReader);
+
+            StringBuilder sbr = new StringBuilder();
+            String receive = null;
+            while ((receive = reader.readLine()) != null) {
+                sbr.append(receive).append('\r');
+            }
+            reader.close();
+            clients.close();
+            return sbr.toString();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            close(clients);
+        }
